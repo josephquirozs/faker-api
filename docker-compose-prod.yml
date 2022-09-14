@@ -1,0 +1,48 @@
+version: "3.5"
+services:
+  faker-api:
+    container_name: faker-api
+    image: faker-api-image:0.0.1
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    ports:
+      - "51003:51003"
+    environment:
+      - "SPRING_PROFILES_ACTIVE=prod"
+      - "APP_PORT=51003"
+      - "DB_HOST=faker-db"
+      - "DB_PORT=1433"
+      - "DB_NAME=faker"
+      - "DB_USER=sa"
+      - "DB_PASSWORD=Secret123"
+      - "TZ=America/Lima"
+    depends_on:
+      - faker-db-initializer
+
+  faker-db-initializer:
+    container_name: faker-db-initializer
+    image: mcr.microsoft.com/mssql-tools
+    environment:
+      - "DB_HOST=faker-db"
+      - "DB_PORT=1433"
+      - "DB_USER=sa"
+      - "DB_PASSWORD=Secret123"
+    volumes:
+      - ./db/scripts:/app/scripts
+    depends_on:
+      - faker-db
+    command: /app/scripts/setup
+
+  faker-db:
+    container_name: faker-db
+    image: mcr.microsoft.com/mssql/server:2019-CU17-ubuntu-20.04
+    ports:
+      - "1403:1433"
+    environment:
+      - "ACCEPT_EULA=Y"
+      - "SA_PASSWORD=Secret123"
+      - "MSSQL_PID=Express"
+      - "TZ=America/Lima"
+    volumes:
+      - ./db/prod/data:/var/opt/mssql/data

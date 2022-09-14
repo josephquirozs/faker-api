@@ -1,0 +1,13 @@
+FROM eclipse-temurin:17-jdk-alpine AS builder
+WORKDIR /app
+COPY . .
+RUN ./mvnw package -DskipTests
+
+FROM eclipse-temurin:17-jdk-alpine AS runner
+WORKDIR /app
+RUN apk add --no-cache tzdata
+RUN addgroup -S spring \
+    && adduser -S spring -G spring
+USER spring:spring
+COPY --from=builder /app/target/*.jar faker-api.jar
+ENTRYPOINT ["java", "-jar", "faker-api.jar"]

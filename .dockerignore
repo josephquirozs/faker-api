@@ -1,0 +1,13 @@
+.dockerignore
+Dockerfile.prod
+docker-compose-dev.yml
+docker-compose-prod.yml
+compose-up-dev
+compose-up-prod
+compose-down-dev
+compose-down-prod
+.git
+.idea
+target
+db/dev
+db/prod

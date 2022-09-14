@@ -1,0 +1,28 @@
+version: "3.5"
+services:
+  faker-db-initializer_dev:
+    container_name: faker-db-initializer_dev
+    image: mcr.microsoft.com/mssql-tools
+    environment:
+      - "DB_HOST=faker-db_dev"
+      - "DB_PORT=1433"
+      - "DB_USER=sa"
+      - "DB_PASSWORD=Secret123"
+    volumes:
+      - ./db/scripts:/app/scripts
+    depends_on:
+      - faker-db_dev
+    command: /app/scripts/setup
+
+  faker-db_dev:
+    container_name: faker-db_dev
+    image: mcr.microsoft.com/mssql/server:2019-CU17-ubuntu-20.04
+    ports:
+      - "1401:1433"
+    environment:
+      - "ACCEPT_EULA=Y"
+      - "SA_PASSWORD=Secret123"
+      - "MSSQL_PID=Express"
+      - "TZ=America/Lima"
+    volumes:
+      - ./db/dev/data:/var/opt/mssql/data
